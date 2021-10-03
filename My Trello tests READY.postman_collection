@@ -1,0 +1,546 @@
+{
+	"info": {
+		"_postman_id": "cba96e8c-034f-41ca-8da6-63a694dc4036",
+		"name": "My Trello tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create_a_board",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//Prepare test data: random board name usin Postman dynamic variable\r",
+							"pm.globals.set(\"boardName\", pm.variables.replaceIn('{{$randomWords}}'));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TEST 1 check if response status is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// TEST 2 check if board name in response is correct\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Name is OK\", function () {\r",
+							"pm.expect(response.name).to.eql(pm.globals.get(\"boardName\"));\r",
+							"});\r",
+							"\r",
+							"//AFTER SCRIPT set board id as a global variable, so it can be used in next scenario\r",
+							"pm.globals.set(\"boardId\", pm.variables.replaceIn(response.id));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{trelloURL}}/1/boards/?token={{token}}&key={{key}}&name={{boardName}}&prefs_permissionLevel=public&defaultLists=false",
+					"host": [
+						"{{trelloURL}}"
+					],
+					"path": [
+						"1",
+						"boards",
+						""
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "name",
+							"value": "{{boardName}}"
+						},
+						{
+							"key": "prefs_permissionLevel",
+							"value": "public"
+						},
+						{
+							"key": "defaultLists",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_a_board_and_check_data",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TEST 1 check if response status is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// TEST 2 check if board name in response is correct\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Name is OK\", function () {\r",
+							"pm.expect(response.name).to.eql(pm.globals.get(\"boardName\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{trelloURL}}/1/boards/{{boardId}}",
+					"host": [
+						"{{trelloURL}}"
+					],
+					"path": [
+						"1",
+						"boards",
+						"{{boardId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add_to_do_list_to_board",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TEST 1 check if response status is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// TEST 2 check if list name in response is correct\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Name is OK\", function () {\r",
+							"pm.expect(response.name).to.eql(\"To do\");\r",
+							"});\r",
+							"\r",
+							"//AFTER SCRIPT set list id as a global variable, so it can be used in next scenario\r",
+							"pm.globals.set(\"toDoListId\", pm.variables.replaceIn(response.id));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"To do\",\r\n    \"closed\": false,\r\n    \"idBoard\": \"{{boardId}}\",\r\n    \"pos\": \"114688\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{trelloURL}}/1/lists/?token={{token}}&key={{key}}",
+					"host": [
+						"{{trelloURL}}"
+					],
+					"path": [
+						"1",
+						"lists",
+						""
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "idBoard ",
+							"value": "{{boardId}}",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add_doing_list_to_board",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TEST 1 check if response status is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// TEST 2 check if list name in response is correct\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Name is OK\", function () {\r",
+							"pm.expect(response.name).to.eql(\"Doing\");\r",
+							"});\r",
+							"\r",
+							"//AFTER SCRIPT set list id as a global variable, so it can be used in next scenario\r",
+							"pm.globals.set(\"doingListId\", pm.variables.replaceIn(response.id));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Doing\",\r\n    \"closed\": false,\r\n    \"idBoard\": \"{{boardId}}\",\r\n    \"pos\": \"114688\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{trelloURL}}/1/lists/?token={{token}}&key={{key}}",
+					"host": [
+						"{{trelloURL}}"
+					],
+					"path": [
+						"1",
+						"lists",
+						""
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "idBoard ",
+							"value": "{{boardId}}",
+							"disabled": true
+						},
+						{
+							"key": "name",
+							"value": "Postponed",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add_new_task_to_todo_list",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TEST 1 check if response status is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// TEST 2 check if task data in response is correct\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Task's name is OK\", function () {\r",
+							"pm.expect(response.name).to.eql(\"New task\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Taks's list is OK\", function () {\r",
+							"pm.expect(response.idList).to.eql(pm.globals.get(\"toDoListId\"));\r",
+							"});\r",
+							"\r",
+							"//AFTER SCRIPT set task id as a global variable, so it can be used in next scenario\r",
+							"pm.globals.set(\"taskId\", pm.variables.replaceIn(response.id));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"New task\",\r\n    \"desc\": \"desc test\",\r\n    \"pos\": \"top\",\r\n    \"idList\": \"{{toDoListId}}\",\r\n    \"limits\": {}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{trelloURL}}/1/cards/?token={{token}}&key={{key}}",
+					"host": [
+						"{{trelloURL}}"
+					],
+					"path": [
+						"1",
+						"cards",
+						""
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "move_task",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TEST 1 check if response status is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// TEST 2 check that task data in response is correct\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Taks's list changed to Doing\", function () {\r",
+							"pm.expect(response.idList).to.eql(pm.globals.get(\"doingListId\"));\r",
+							"});\r",
+							"\r",
+							"// TEST 3 check that there is no due badge\r",
+							"pm.test(\"No due datel\", function () {\r",
+							"pm.expect(response.badges.due).to.equal(null);\r",
+							"});\r",
+							"\r",
+							"// TEST 4 check there are no members assigned\r",
+							"pm.test(\"No member is assigned to task\", function () {\r",
+							"pm.expect(response.idMembers.size).to.equal(undefined);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{trelloURL}}/1/cards/{{taskId}}?token={{token}}&key={{key}}&idList={{doingListId}}",
+					"host": [
+						"{{trelloURL}}"
+					],
+					"path": [
+						"1",
+						"cards",
+						"{{taskId}}"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "idList",
+							"value": "{{doingListId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete_board",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{trelloURL}}/1/boards/{{boardId}}?token={{token}}&key={{key}}",
+					"host": [
+						"{{trelloURL}}"
+					],
+					"path": [
+						"1",
+						"boards",
+						"{{boardId}}"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_a_board_and_check_its_deleted",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{trelloURL}}/1/boards/{{boardId}}",
+					"host": [
+						"{{trelloURL}}"
+					],
+					"path": [
+						"1",
+						"boards",
+						"{{boardId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
